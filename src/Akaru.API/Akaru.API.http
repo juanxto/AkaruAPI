@@ -1,0 +1,65 @@
+@baseUrl = http://localhost:5001
+@token = dev-test-token
+
+### Health check
+GET {{baseUrl}}/health
+
+### 1. Sync usuário (primeira chamada após login Firebase)
+POST {{baseUrl}}/api/usuarios/sync
+Authorization: Bearer {{token}}
+
+### 2. Perfil do usuário logado
+GET {{baseUrl}}/api/usuarios/me
+Authorization: Bearer {{token}}
+
+### 3. Atualizar perfil
+PUT {{baseUrl}}/api/usuarios/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nome": "Juan Pablo",
+  "cidade": "São Paulo",
+  "estado": "SP",
+  "latitude": -23.5505,
+  "longitude": -46.6333
+}
+
+### 4. Registrar plantio
+POST {{baseUrl}}/api/plantios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "culturaId": 3,
+  "latitude": -23.5505,
+  "longitude": -46.6333,
+  "dataPlantio": "2026-06-15T00:00:00Z",
+  "detalhes": "Solo argiloso, 2 hectares",
+  "cidade": "São Paulo",
+  "estado": "SP"
+}
+
+### 5. Listar plantios
+GET {{baseUrl}}/api/plantios
+Authorization: Bearer {{token}}
+
+### 6. Salvar histórico (recomendação vinda da API Java)
+POST {{baseUrl}}/api/historico
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "culturaId": 3,
+  "culturaNome": "Milho",
+  "textoRecomendacao": "Plante entre setembro e novembro. Solo bem drenado.",
+  "score": 87.5,
+  "latitude": -23.5505,
+  "longitude": -46.6333,
+  "detalhes": "Área irrigada",
+  "dadosClimaticos": "{\"temperatura\":28,\"umidade\":65}"
+}
+
+### 7. Listar histórico
+GET {{baseUrl}}/api/historico
+Authorization: Bearer {{token}}
