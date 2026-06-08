@@ -1,0 +1,22 @@
+services:
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: akaru-oracle
+    environment:
+      ORACLE_PASSWORD: oracle
+      APP_USER: akaru
+      APP_USER_PASSWORD: akaru123
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./scripts/gs-db:/scripts/gs-db:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+volumes:
+  oracle-data:

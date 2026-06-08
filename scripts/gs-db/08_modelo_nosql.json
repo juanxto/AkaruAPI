@@ -1,0 +1,23 @@
+{
+  "cultura": {
+    "id": 1,
+    "nome": "Milho",
+    "ciclo_dias": 120,
+    "requisitos_climaticos": {
+      "temp_min": 18,
+      "temp_max": 32,
+      "chuva_ideal_mm": 600,
+      "tipo_solo": "Argiloso"
+    },
+    "melhor_epoca_plantio": ["Setembro", "Outubro", "Novembro"],
+    "alertas_comuns": [
+      { "tipo": "CHUVA", "mensagem": "Excesso de chuva no plantio prejudica a germinacao." },
+      { "tipo": "TEMPERATURA", "mensagem": "Temperaturas acima de 35C reduzem a produtividade." }
+    ],
+    "regioes_recomendadas": [
+      { "estado": "MT", "aptidao": "alta" },
+      { "estado": "PR", "aptidao": "alta" },
+      { "estado": "RN", "aptidao": "media" }
+    ]
+  }
+}

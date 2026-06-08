@@ -9,20 +9,20 @@ $Headers = @{ Authorization = "Bearer $Token" }
 
 function Test-Step {
     param([string]$Nome, [scriptblock]$Acao)
-    Write-Host "`n>> $Nome" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host ">> $Nome" -ForegroundColor Cyan
     & $Acao
     Write-Host "   OK" -ForegroundColor Green
 }
 
-Write-Host "=== Akaru API — Teste do fluxo mobile ===" -ForegroundColor Yellow
+Write-Host "=== Akaru API - Teste do fluxo mobile ===" -ForegroundColor Yellow
 
-# Verifica se a API está no ar
 try {
     $health = Invoke-RestMethod -Uri "$BaseUrl/health" -Method Get -TimeoutSec 5
     Write-Host "API online: $health"
 } catch {
     Write-Host "API nao esta rodando em $BaseUrl" -ForegroundColor Red
-    Write-Host "Execute em outro terminal: cd src\Akaru.API && dotnet run" -ForegroundColor Yellow
+    Write-Host "Execute em outro terminal: cd src\Akaru.API; dotnet run" -ForegroundColor Yellow
     exit 1
 }
 
@@ -83,4 +83,5 @@ Test-Step "GET /api/historico" {
     Write-Host "   Total=$($historicos.Count)"
 }
 
-Write-Host "`n=== Todos os testes passaram! ===" -ForegroundColor Green
+Write-Host ""
+Write-Host "=== Todos os testes passaram! ===" -ForegroundColor Green
