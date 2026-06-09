@@ -18,7 +18,7 @@ API REST do projeto **Akaru** (FIAP Global Solution 2026/1) — plataforma de ap
 ## Vídeos
 
 - **Pitch (3 min):** https://youtu.be/wtwuiYfW88M
-- **Demonstração (8 min):** _(gravar e adicionar link aqui)_
+- **Demonstração (8 min):** https://youtu.be/n53ZO3xE3OQ
 
 ## Problema e solução
 
