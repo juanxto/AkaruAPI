@@ -1,5 +1,4 @@
 using Akaru.Application.Interfaces;
-using Akaru.Infrastructure.Auth;
 using Akaru.Infrastructure.Persistence;
 using Akaru.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,6 @@ public static class DependencyInjection
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<IPlantioRepository, PlantioRepository>();
         services.AddScoped<IHistoricoRepository, HistoricoRepository>();
-        services.AddSingleton<IFirebaseAuthService, FirebaseAuthService>();
 
         return services;
     }

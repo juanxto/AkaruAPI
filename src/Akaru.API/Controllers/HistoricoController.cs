@@ -12,12 +12,10 @@ namespace Akaru.API.Controllers;
 public class HistoricoController : ControllerBase
 {
     private readonly HistoricoService _historicoService;
-    private readonly UsuarioService _usuarioService;
 
-    public HistoricoController(HistoricoService historicoService, UsuarioService usuarioService)
+    public HistoricoController(HistoricoService historicoService)
     {
         _historicoService = historicoService;
-        _usuarioService = usuarioService;
     }
 
     [HttpPost]
@@ -25,7 +23,7 @@ public class HistoricoController : ControllerBase
         [FromBody] SalvarHistoricoDto dto,
         CancellationToken ct)
     {
-        var usuarioId = await ObterUsuarioIdAsync(ct);
+        var usuarioId = ObterUsuarioId();
         var historico = await _historicoService.SalvarAsync(usuarioId, dto, ct);
         return CreatedAtAction(nameof(ObterPorId), new { id = historico.Id }, historico);
     }
@@ -33,7 +31,7 @@ public class HistoricoController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<HistoricoResponseDto>>> Listar(CancellationToken ct)
     {
-        var usuarioId = await ObterUsuarioIdAsync(ct);
+        var usuarioId = ObterUsuarioId();
         var historicos = await _historicoService.ListarPorUsuarioAsync(usuarioId, ct);
         return Ok(historicos);
     }
@@ -41,14 +39,10 @@ public class HistoricoController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<HistoricoResponseDto>> ObterPorId(int id, CancellationToken ct)
     {
-        var usuarioId = await ObterUsuarioIdAsync(ct);
+        var usuarioId = ObterUsuarioId();
         var historico = await _historicoService.ObterPorIdAsync(usuarioId, id, ct);
         return Ok(historico);
     }
 
-    private async Task<int> ObterUsuarioIdAsync(CancellationToken ct)
-    {
-        var firebaseUid = User.ObterFirebaseUid();
-        return await _usuarioService.ObterIdPorFirebaseUidAsync(firebaseUid, ct);
-    }
+    private int ObterUsuarioId() => User.ObterUsuarioId();
 }

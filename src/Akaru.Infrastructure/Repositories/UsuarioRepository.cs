@@ -17,6 +17,9 @@ public class UsuarioRepository : IUsuarioRepository
     public async Task<Usuario?> ObterPorFirebaseUidAsync(string firebaseUid, CancellationToken ct = default) =>
         await _context.Usuarios.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid, ct);
 
+    public async Task<Usuario?> ObterPorEmailAsync(string email, CancellationToken ct = default) =>
+        await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email, ct);
+
     public async Task<Usuario?> ObterPorIdAsync(int id, CancellationToken ct = default) =>
         await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id, ct);
 

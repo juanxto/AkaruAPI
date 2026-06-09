@@ -8,18 +8,17 @@
 
 A API .NET é responsável pela **gestão de dados persistentes** do Akaru:
 
-- Sincronização de usuários autenticados via **Firebase Authentication**
+- Cadastro e autenticação de usuários via **JWT**
 - CRUD de **plantios** registrados pelo agricultor
 - **Histórico** de recomendações geradas pela API Java (Gemini)
 
 ```mermaid
 flowchart LR
-    Mobile[App React Native] -->|Firebase ID Token| API[Akaru.API]
+    Mobile[App React Native] -->|JWT Bearer| API[Akaru.API]
     API --> App[Akaru.Application]
     App --> Infra[Akaru.Infrastructure]
     Infra --> Oracle[(Oracle DB)]
-    Mobile --> Firebase[Firebase Auth]
-    API --> FirebaseAdmin[Firebase Admin SDK]
+    Mobile --> Java[API Java - Recomendacoes]
 ```
 
 ## Clean Architecture
@@ -28,36 +27,37 @@ flowchart LR
 |--------|------------------|
 | **Domain** | Entidades, exceções de domínio |
 | **Application** | DTOs, interfaces, serviços (regras de negócio) |
-| **Infrastructure** | EF Core Oracle, repositórios, Firebase Admin |
-| **API** | Controllers, middleware, autenticação, Swagger |
+| **Infrastructure** | EF Core Oracle, repositórios |
+| **API** | Controllers, JWT, middleware, Swagger |
 
 ### SOLID aplicado
 
 - **SRP:** cada serviço (`UsuarioService`, `PlantioService`, `HistoricoService`) tem uma responsabilidade
 - **DIP:** serviços dependem de interfaces (`IPlantioRepository`, etc.), não de implementações concretas
 
-## Autenticação (Firebase)
+## Autenticação (JWT)
 
-O mobile faz login/cadastro no **Firebase Auth** e envia o ID Token:
+O cliente obtém um token via cadastro ou login:
 
 ```
-Authorization: Bearer <firebase_id_token>
+Authorization: Bearer <jwt_token>
 ```
 
 Fluxo:
 
-1. `FirebaseAuthenticationHandler` extrai o token do header
-2. `FirebaseAuthService` valida via Firebase Admin SDK
-3. Claims `uid` e `email` são injetados no `HttpContext`
-4. `POST /api/usuarios/sync` cria o usuário no Oracle na primeira vez
+1. `POST /api/auth/register` ou `POST /api/auth/login` retorna JWT
+2. `JwtBearer` middleware valida assinatura e expiração
+3. Claim `sub` contém o ID do usuário no Oracle
+4. Controllers usam `User.ObterUsuarioId()` para identificar o usuário
 
-> Em desenvolvimento, `Firebase:UseMockAuth=true` permite testar sem credenciais Firebase.
+Senhas são armazenadas com **PBKDF2** (`PasswordHasher`). Usuários do seed GS com senha em texto plano continuam funcionando no login.
 
 ## Endpoints
 
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| POST | `/api/usuarios/sync` | Sincroniza usuário Firebase → Oracle |
+| POST | `/api/auth/register` | Cadastro + JWT |
+| POST | `/api/auth/login` | Login + JWT |
 | GET | `/api/usuarios/me` | Perfil do usuário logado |
 | PUT | `/api/usuarios/me` | Atualiza perfil |
 | POST | `/api/plantios` | Registra plantio |
@@ -83,4 +83,4 @@ Fluxo:
 
 Base URL sugerida em desenvolvimento: `http://localhost:5001`
 
-O app deve chamar `POST /api/usuarios/sync` logo após o login Firebase para garantir que o usuário existe no Oracle antes de usar plantios e histórico.
+O app deve chamar `POST /api/auth/login` (ou `register`) e enviar o JWT em todas as requisições protegidas.

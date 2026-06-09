@@ -4,8 +4,14 @@ namespace Akaru.API.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static string ObterFirebaseUid(this ClaimsPrincipal user) =>
-        user.FindFirstValue(ClaimTypes.NameIdentifier)
-        ?? user.FindFirstValue("user_id")
-        ?? throw new UnauthorizedAccessException("Token sem identificador de usuário.");
+    public static int ObterUsuarioId(this ClaimsPrincipal user)
+    {
+        var sub = user.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? user.FindFirstValue("sub");
+
+        if (int.TryParse(sub, out var usuarioId))
+            return usuarioId;
+
+        throw new UnauthorizedAccessException("Token JWT inválido ou sem identificador do usuário.");
+    }
 }

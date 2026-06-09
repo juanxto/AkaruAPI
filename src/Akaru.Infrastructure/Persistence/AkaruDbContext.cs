@@ -26,6 +26,7 @@ public class AkaruDbContext : DbContext
             entity.Property(e => e.FirebaseUid).HasColumnName("FIREBASE_UID").HasMaxLength(128).IsRequired();
             entity.Property(e => e.Nome).HasColumnName("NOME").HasMaxLength(150).IsRequired();
             entity.Property(e => e.Email).HasColumnName("EMAIL").HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Senha).HasColumnName("SENHA").HasMaxLength(200);
             entity.Property(e => e.Latitude).HasColumnName("LATITUDE").HasPrecision(10, 7);
             entity.Property(e => e.Longitude).HasColumnName("LONGITUDE").HasPrecision(10, 7);
             entity.Property(e => e.Cidade).HasColumnName("CIDADE").HasMaxLength(100);

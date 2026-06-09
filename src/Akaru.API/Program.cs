@@ -1,18 +1,40 @@
+using System.Text;
 using Akaru.API.Auth;
 using Akaru.API.Middleware;
 using Akaru.Application;
+using Akaru.Application.Interfaces;
 using Akaru.Infrastructure;
 using Akaru.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddAuthentication("Firebase")
-    .AddScheme<AuthenticationSchemeOptions, FirebaseAuthenticationHandler>("Firebase", _ => { });
+var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
+    ?? throw new InvalidOperationException("Configuração JWT não encontrada.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+            ClockSkew = TimeSpan.FromMinutes(1)
+        };
+    });
 
 builder.Services.AddAuthorization();
 
@@ -26,7 +48,7 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "API .NET do projeto Akaru (FIAP Global Solution 2026). " +
                       "Gestão de usuários, plantios e histórico de recomendações. " +
-                      "Autenticação via Firebase ID Token."
+                      "Autenticação via JWT."
     });
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -36,7 +58,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Firebase ID Token. Ex: Bearer {seu_token}"
+        Description = "JWT obtido em POST /api/auth/login. Ex: Bearer {seu_token}"
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement

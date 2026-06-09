@@ -6,6 +6,7 @@ public class Usuario
     public string FirebaseUid { get; set; } = string.Empty;
     public string Nome { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string? Senha { get; set; }
     public decimal? Latitude { get; set; }
     public decimal? Longitude { get; set; }
     public string? Cidade { get; set; }

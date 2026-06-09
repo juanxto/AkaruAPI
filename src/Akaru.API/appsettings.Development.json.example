@@ -1,10 +1,11 @@
 {
   "ConnectionStrings": {
-    "Oracle": "User Id=akaru;Password=SUA_SENHA;Data Source=HOST:1521/XEPDB1"
+    "Oracle": "User Id=akaru;Password=SUA_SENHA;Data Source=localhost:1521/XEPDB1"
   },
-  "Firebase": {
-    "ProjectId": "seu-projeto-firebase",
-    "CredentialsPath": "firebase-credentials.json",
-    "UseMockAuth": false
+  "Jwt": {
+    "Secret": "SUA-CHAVE-SECRETA-COM-PELO-MENOS-32-CARACTERES",
+    "Issuer": "AkaruAPI",
+    "Audience": "AkaruApp",
+    "ExpirationHours": 24
   }
 }
